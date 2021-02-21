@@ -1,0 +1,117 @@
+- name: "Install Docker and docker-compose"
+  hosts: all
+  become: true
+
+  tasks:
+    - name: apt update
+      apt: 
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 360
+
+    - name: install apt-transport-https
+      apt:
+        name: apt-transport-https
+        state: present
+        update_cache: yes
+
+    - name: install ca-certificates
+      apt:
+        name: ca-certificates
+        state: present
+        update_cache: yes
+
+    - name: install software-properties-common
+      apt:
+        name: software-properties-common
+        state: present
+        update_cache: yes
+
+    - name: install python3.7
+      apt:
+        name: python3.7
+        state: present
+        update_cache: yes
+
+    - name: install python3.7-dev
+      apt:
+        name: python3.7-dev
+        state: present
+        update_cache: yes
+
+    - name: install python3.8
+      apt:
+        name: python3.8
+        state: present
+        update_cache: yes
+
+    - name: install python3.8-dev
+      apt:
+        name: python3.8-dev
+        state: present
+        update_cache: yes
+
+    - name: install virtualenv
+      apt:
+        name: virtualenv
+        state: present
+        update_cache: yes
+
+    - name: install make
+      apt:
+        name: make
+        state: present
+        update_cache: yes
+
+    - name: install awcli
+      apt:
+        name: awscli
+        state: present
+        update_cache: yes
+
+    - name: install curl
+      apt:
+        name: curl
+        state: present
+        update_cache: yes
+
+    - name: jq
+      apt:
+        name: jq
+        state: present
+        update_cache: yes
+
+    - name: ensure repository key is installed
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: ensure docker registry is available
+      apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable'
+
+    - name: ensure docker and dependencies are installed
+      apt: 
+        name: docker-ce
+        state: present
+        update_cache: yes
+
+    - name: add ubuntu user to docker group
+      user:
+        name: ubuntu
+        state: present
+        groups: docker
+        append: yes
+
+    - service: name=docker state=restarted
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+        dest: "/usr/local/bin/docker-compose"
+        mode: 0755
+
+    - name: restart docker service
+      service: 
+        name: docker
+        state: restarted
+
